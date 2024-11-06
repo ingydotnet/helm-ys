@@ -1,0 +1,7 @@
+!yamlscript/v0
+
+{{ with .Release }}
+helm =::
+  Release:
+    {{- toYaml . | nindent 4 }}
+{{- end }}

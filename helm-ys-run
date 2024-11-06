@@ -1,0 +1,12 @@
+#!/bin/sh
+
+export PATH=/tmp/helm-ys/bin:$PATH
+export YSPATH=$PWD:$PWD/.helm-ys
+
+perl -p0e '
+  s{^!yamlscript/v0/.*\n}{}mg;
+  s{^:use helpers:.*\n}{}mg;
+  s{^---$}{--- !yamlscript/v0/}mg;
+  s/(.*)\n/$1\n:use helpers:\n/;
+' |
+  ys -Y -s -

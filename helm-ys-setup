@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+ys_version=0.1.82
+helm_ys_repo=https://github.com/ingydotnet/helm-ys
+
+ypre=/tmp/helm-ys
+ybin=$ypre/bin
+
+ydir=.helm-ys
+renderer=$ydir/helm-ys-run
+
+main() (
+  [[ -e Chart.yaml ]] ||
+    die "Not in a helm chart directory"
+
+  install-ys
+  install-helm-ys
+
+  echo "$renderer"
+)
+
+install-ys() (
+  if [[ ! -e $ybin/ys-$ys_version ]]; then
+    export PATH=$ybin:$PATH
+    (
+      (
+        set -x
+        curl -s https://yamlscript.org/install
+      ) | BIN=1 PREFIX=$ypre VERSION=$ys_version bash
+    ) >&2
+  fi
+)
+
+install-helm-ys() (
+  if [[ ! -e $ydir ]]; then
+    (
+      set -x
+      git clone -q $helm_ys_repo $ydir
+    ) >&2
+  fi
+)
+
+die() { echo "$*"; exit 1; }
+
+main "$@"
